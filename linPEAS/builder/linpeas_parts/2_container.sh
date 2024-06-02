@@ -113,6 +113,7 @@ checkDockerVersionExploits() {
   if echo "$dockerVersion" | grep -iq "not found"; then
     VULN_CVE_2019_13139="$(echo_not_found)"
     VULN_CVE_2019_5736="$(echo_not_found)"
+    VULN_CVE_2021_41091="$(echo_not_found)"
     return
   fi
 
@@ -124,6 +125,11 @@ checkDockerVersionExploits() {
   VULN_CVE_2019_5736="$(echo_no)"
   if [ "$(echo $dockerVersion | sed 's,\.,,g')" -lt "1893" ]; then
     VULN_CVE_2019_5736="Yes"
+  fi
+
+  VULN_CVE_2021_41091="$(echo_no)"
+  if [ "$(echo $dockerVersion | sed 's,\.,,g')" -lt "20109" ]; then
+    VULN_CVE_2021_41091="Yes"
   fi
 }
 
@@ -268,6 +274,7 @@ if echo "$containerType" | grep -qi "docker"; then
     checkDockerVersionExploits
     print_list "Vulnerable to CVE-2019-5736 ....$NC$VULN_CVE_2019_5736"$NC | sed -${E} "s,Yes,${SED_RED_YELLOW},"
     print_list "Vulnerable to CVE-2019-13139 ...$NC$VULN_CVE_2019_13139"$NC | sed -${E} "s,Yes,${SED_RED_YELLOW},"
+    print_list "Vulnerable to CVE-2021-41091 ...$NC$VULN_CVE_2021_41091"$NC | sed -${E} "s,Yes,${SED_RED_YELLOW},"
     if [ "$inContainer" ]; then
         checkDockerRootless
         print_list "Rootless Docker? ............... $DOCKER_ROOTLESS\n"$NC | sed -${E} "s,No,${SED_RED}," | sed -${E} "s,Yes,${SED_GREEN},"
