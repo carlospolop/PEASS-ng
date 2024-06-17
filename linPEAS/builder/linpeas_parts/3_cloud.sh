@@ -168,9 +168,9 @@ echo ""
 if [ "$is_tencent_cvm" = "Yes" ]; then
   tencent_req=""
   if [ "$(command -v curl)" ]; then 
-    tencent_req='curl -sfkG'
+    tencent_req='curl --connect-timeout 2 -sfkG'
   elif [ "$(command -v wget)" ]; then
-    tencent_req='wget -q -O '
+    tencent_req='wget -q --timeout 2 --tries 1  -O -'
   else 
     echo "Neither curl nor wget were found, I can't enumerate the metadata service :("
   fi
@@ -237,6 +237,10 @@ if [ "$is_tencent_cvm" = "Yes" ]; then
       echo "  Key: "$(eval $tencent_req "http://169.254.0.23/latest/meta-data/public-keys/${key}openssh-key")
       echo "  =============="
     done
+
+    echo ""
+    print_3title "User Data"
+    eval $tencent_req http://169.254.0.23/latest/user-data; echo ""
 fi
 
 if [ "$is_aliyun_ecs" = "Yes" ]; then
